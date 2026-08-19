@@ -222,18 +222,32 @@ def _serve_file_or_json(file_path: Path, page_name: str):
 
 @app.get("/")
 def home():
-    index_file = FRONTEND_DIR / "index.html"
-    if index_file.exists():
-        return FileResponse(str(index_file))
-    public_index = FRONTEND_DIR / "public" / "index.html"
-    if public_index.exists():
-        return FileResponse(str(public_index))
+    db_status = "Disconnected ❌"
+    try:
+        connection = engine.connect()
+        connection.close()
+        db_status = "Connected Successfully ✅"
+    except Exception as e:
+        db_status = f"Connection Error: {str(e)}"
+
     return {
-        "status": "healthy",
-        "message": "SwipeX Backend API is running successfully!",
-        "version": "2.0.0",
-        "docs": "/docs",
-        "health": "/health"
+        "service": "SwipeX Backend API",
+        "status": "healthy ✅",
+        "database": db_status,
+        "docs_url": "/docs",
+        "health_url": "/health",
+        "db_test_url": "/db-test",
+        "available_endpoints": [
+            "/auth/login",
+            "/auth/register",
+            "/jobs",
+            "/applications",
+            "/notifications",
+            "/analytics",
+            "/ats/analyze",
+            "/saved",
+            "/profile"
+        ]
     }
 
 @app.get("/login")
