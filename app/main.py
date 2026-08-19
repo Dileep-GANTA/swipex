@@ -203,119 +203,90 @@ def health_check():
 
 
 # ======================================================
-# FRONTEND ROUTES
+# FRONTEND ROUTES & HEALTH
 # ======================================================
+
+def _serve_file_or_json(file_path: Path, page_name: str):
+    if file_path.exists():
+        return FileResponse(str(file_path))
+    legacy_path = FRONTEND_DIR / "legacy_static_html_backup" / file_path.name
+    if legacy_path.exists():
+        return FileResponse(str(legacy_path))
+    return {
+        "status": "online",
+        "service": "SwipeX Backend API",
+        "page": page_name,
+        "docs": "/docs",
+        "health": "/health"
+    }
 
 @app.get("/")
 def home():
-
-    return FileResponse(
-        str(FRONTEND_DIR / "index.html")
-    )
-
+    index_file = FRONTEND_DIR / "index.html"
+    if index_file.exists():
+        return FileResponse(str(index_file))
+    public_index = FRONTEND_DIR / "public" / "index.html"
+    if public_index.exists():
+        return FileResponse(str(public_index))
+    return {
+        "status": "healthy",
+        "message": "SwipeX Backend API is running successfully!",
+        "version": "2.0.0",
+        "docs": "/docs",
+        "health": "/health"
+    }
 
 @app.get("/login")
 def login_page():
-
-    return FileResponse(
-        str(FRONTEND_DIR / "login.html")
-    )
-
+    return _serve_file_or_json(FRONTEND_DIR / "login.html", "login")
 
 @app.get("/register")
 def register_page():
-
-    return FileResponse(
-        str(FRONTEND_DIR / "register.html")
-    )
-
+    return _serve_file_or_json(FRONTEND_DIR / "register.html", "register")
 
 @app.get("/dashboard")
 def dashboard_page():
-
-    return FileResponse(
-        str(FRONTEND_DIR / "dashboard.html")
-    )
-
+    return _serve_file_or_json(FRONTEND_DIR / "dashboard.html", "dashboard")
 
 @app.get("/upload")
 def upload_page():
-
-    return FileResponse(
-        str(FRONTEND_DIR / "upload.html")
-    )
-
+    return _serve_file_or_json(FRONTEND_DIR / "upload.html", "upload")
 
 @app.get("/jobs-page")
 def jobs_page():
-
-    return FileResponse(
-        str(FRONTEND_DIR / "jobs.html")
-    )
-
+    return _serve_file_or_json(FRONTEND_DIR / "jobs.html", "jobs")
 
 @app.get("/companies")
 def companies_page():
-
-    return FileResponse(
-        str(FRONTEND_DIR / "companies.html")
-    )
-
+    return _serve_file_or_json(FRONTEND_DIR / "companies.html", "companies")
 
 @app.get("/saved")
 def saved_page():
-
-    return FileResponse(
-        str(FRONTEND_DIR / "saved.html")
-    )
-
+    return _serve_file_or_json(FRONTEND_DIR / "saved.html", "saved")
 
 @app.get("/profile")
 def profile_page():
-
-    return FileResponse(
-        str(FRONTEND_DIR / "profile.html")
-    )
-
+    return _serve_file_or_json(FRONTEND_DIR / "profile.html", "profile")
 
 @app.get("/match")
 def match_page():
-
-    return FileResponse(
-        str(FRONTEND_DIR / "match.html")
-    )
-
+    return _serve_file_or_json(FRONTEND_DIR / "match.html", "match")
 
 @app.get("/recruiter")
 def recruiter_page():
-
-    return FileResponse(
-        str(FRONTEND_DIR / "recruiter.html")
-    )
-
+    return _serve_file_or_json(FRONTEND_DIR / "recruiter.html", "recruiter")
 
 @app.get("/candidates")
 def candidates_page():
-
-    return FileResponse(
-        str(FRONTEND_DIR / "candidates.html")
-    )
-
+    return _serve_file_or_json(FRONTEND_DIR / "candidates.html", "candidates")
 
 @app.get("/applications")
 def applications_page():
-
-    return FileResponse(
-        str(FRONTEND_DIR / "applications.html")
-    )
-
+    return _serve_file_or_json(FRONTEND_DIR / "applications.html", "applications")
 
 @app.get("/track")
 def track_page():
-
-    return FileResponse(
-        str(FRONTEND_DIR / "track.html")
-    )
+    return _serve_file_or_json(FRONTEND_DIR / "track.html", "track")
 
 
 # ======================================================
