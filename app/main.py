@@ -223,31 +223,83 @@ def _serve_file_or_json(file_path: Path, page_name: str):
 @app.get("/")
 def home():
     db_status = "Disconnected ❌"
+    db_dialect = engine.name if hasattr(engine, "name") else "unknown"
+    table_counts = {}
+    
     try:
-        connection = engine.connect()
-        connection.close()
+        from sqlalchemy import text, inspect
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
         db_status = "Connected Successfully ✅"
+        
+        inspector = inspect(engine)
+        tables = inspector.get_table_names()
+        
+        from .database import SessionLocal
+        from .models import User, Job, Application, SavedJob, Notification, ResumeScoreHistory
+        db = SessionLocal()
+        try:
+            table_counts = {
+                "users": db.query(User).count(),
+                "jobs": db.query(Job).count(),
+                "applications": db.query(Application).count(),
+                "saved_jobs": db.query(SavedJob).count(),
+                "notifications": db.query(Notification).count(),
+                "resume_score_history": db.query(ResumeScoreHistory).count(),
+            }
+        except Exception:
+            table_counts = {"tables": tables}
+        finally:
+            db.close()
+            
     except Exception as e:
         db_status = f"Connection Error: {str(e)}"
 
     return {
-        "service": "SwipeX Backend API",
+        "service": "SwipeX Intelligent Job Discovery API",
         "status": "healthy ✅",
-        "database": db_status,
-        "docs_url": "/docs",
-        "health_url": "/health",
-        "db_test_url": "/db-test",
-        "available_endpoints": [
-            "/auth/login",
-            "/auth/register",
-            "/jobs",
-            "/applications",
-            "/notifications",
-            "/analytics",
-            "/ats/analyze",
-            "/saved",
-            "/profile"
-        ]
+        "version": "2.0.0",
+        "database_connection": {
+            "status": db_status,
+            "engine": db_dialect,
+            "record_counts": table_counts
+        },
+        "documentation": {
+            "swagger_ui": "/docs",
+            "redoc_ui": "/redoc",
+            "openapi_schema": "/openapi.json"
+        },
+        "api_endpoints": {
+            "authentication": [
+                "POST /auth/register",
+                "POST /auth/login",
+                "GET /auth/me"
+            ],
+            "job_discovery_and_matching": [
+                "GET /jobs",
+                "POST /jobs",
+                "GET /jobs/{id}",
+                "GET /matching/recommendations"
+            ],
+            "applications_and_tracking": [
+                "GET /applications",
+                "POST /applications",
+                "PUT /applications/{id}/status",
+                "GET /track"
+            ],
+            "ats_resume_analyzer": [
+                "POST /ats/analyze",
+                "POST /resume/upload"
+            ],
+            "notifications": [
+                "GET /notifications",
+                "PUT /notifications/{id}/read"
+            ],
+            "analytics_and_insights": [
+                "GET /analytics/dashboard",
+                "GET /analytics/recruiter"
+            ]
+        }
     }
 
 @app.get("/login")
@@ -309,21 +361,22 @@ def track_page():
 
 @app.get("/db-test")
 def db_test():
-
     try:
-
-        connection = engine.connect()
-
-        connection.close()
-
+        from sqlalchemy import text, inspect
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        
+        inspector = inspect(engine)
+        tables = inspector.get_table_names()
+        
         return {
-            "message":
-                "Database Connected Successfully ✅"
+            "status": "success",
+            "message": "Database Connected Successfully ✅",
+            "engine_dialect": engine.name,
+            "active_tables": tables
         }
-
     except Exception as e:
-
         return {
-            "error":
-                str(e)
+            "status": "error",
+            "message": f"Database Connection Failed ❌: {str(e)}"
         }
