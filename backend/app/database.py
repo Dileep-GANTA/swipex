@@ -2,6 +2,31 @@ import os
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
+# Load .env file variables automatically
+def _load_env_file():
+    possible_paths = [
+        os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"),
+        os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "backend", ".env"),
+        os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".env")
+    ]
+    for p in possible_paths:
+        if os.path.exists(p):
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith("#") and "=" in line:
+                            key, val = line.split("=", 1)
+                            key_clean = key.strip()
+                            val_clean = val.strip().strip("'\"")
+                            if key_clean and not os.getenv(key_clean):
+                                os.environ[key_clean] = val_clean
+                break
+            except Exception as e:
+                print("Error loading .env file:", e)
+
+_load_env_file()
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
@@ -26,6 +51,7 @@ else:
         DATABASE_URL,
         pool_pre_ping=True
     )
+    print(f"[DATABASE] Connected via DATABASE_URL: {DATABASE_URL.split('@')[-1] if '@' in DATABASE_URL else DATABASE_URL}")
 
 SessionLocal = sessionmaker(
     autocommit=False,
