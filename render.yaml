@@ -21,10 +21,7 @@ services:
 
       # Link to the frontend URL for CORS setting
       - key: FRONTEND_URL
-        fromService:
-          name: swipex-frontend-ganta
-          type: web
-          property: host
+        value: https://swipex-frontend-ganta.onrender.com
 
       # Python Version
       - key: PYTHON_VERSION
@@ -41,10 +38,7 @@ services:
     envVars:
       # Link to the backend URL for API calls
       - key: REACT_APP_API_URL
-        fromService:
-          name: swipex-backend-ganta
-          type: web
-          property: host
+        value: https://swipex-backend-ganta.onrender.com
 
 # 3. PostgreSQL Database
 databases:
