@@ -21,7 +21,7 @@ services:
 
       # Link to the frontend URL for CORS setting
       - key: FRONTEND_URL
-        value: https://swipex-frontend-ganta.onrender.com
+        value: https://swipex-frontend-ganta-fbym.onrender.com
 
       # Python Version
       - key: PYTHON_VERSION
