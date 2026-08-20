@@ -23,6 +23,7 @@ services:
       - key: FRONTEND_URL
         fromService:
           name: swipex-frontend
+          type: web
           property: host
 
       # Python Version
@@ -43,6 +44,7 @@ services:
       - key: REACT_APP_API_URL
         fromService:
           name: swipex-backend
+          type: web
           property: host
 
 # 3. PostgreSQL Database
