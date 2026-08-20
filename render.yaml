@@ -1,0 +1,53 @@
+# =====================================================
+# SwipeX - Render Blueprint Configuration
+# =====================================================
+
+services:
+  # 1. FastAPI Backend Service
+  - type: web
+    name: swipex-backend
+    runtime: python
+    plan: free
+    branch: main
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      # Link to the PostgreSQL database
+      - key: DATABASE_URL
+        fromDatabase:
+          name: swipex-db
+          property: connectionString
+
+      # Link to the frontend URL for CORS setting
+      - key: FRONTEND_URL
+        fromService:
+          name: swipex-frontend
+          property: host
+
+      # Python Version
+      - key: PYTHON_VERSION
+        value: 3.11
+
+  # 2. React Frontend Static Site
+  - type: web
+    name: swipex-frontend
+    runtime: static
+    plan: free
+    branch: main
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishPath: build
+    envVars:
+      # Link to the backend URL for API calls
+      - key: REACT_APP_API_URL
+        fromService:
+          name: swipex-backend
+          property: host
+
+# 3. PostgreSQL Database
+databases:
+  - name: swipex-db
+    plan: free
+    databaseName: swipex
+    user: swipex_user
