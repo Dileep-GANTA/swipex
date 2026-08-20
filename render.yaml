@@ -37,7 +37,7 @@ services:
     branch: main
     rootDir: frontend
     buildCommand: npm install && npm run build
-    staticPublishPath: frontend/build
+    staticPublishPath: build
     envVars:
       # Link to the backend URL for API calls
       - key: REACT_APP_API_URL
