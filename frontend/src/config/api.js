@@ -3,7 +3,13 @@ import axios from 'axios';
 const DEFAULT_BACKEND_URL = 'http://localhost:8000';
 
 export const getApiBaseUrl = () => {
-  // 1. Dynamic Hostname Detection for Network/Livehost (e.g. http://172.19.18.11:3000 or custom domain)
+  // 1. Explicit process.env.REACT_APP_API_URL override if present (Highest priority)
+  const envUrl = process.env.REACT_APP_API_URL;
+  if (envUrl && envUrl.trim() !== '' && !envUrl.includes('127.0.0.1')) {
+    return envUrl.replace(/\/$/, '');
+  }
+
+  // 2. Dynamic Hostname Detection for Network/Livehost (e.g. http://172.19.18.11:3000 or custom domain)
   if (typeof window !== 'undefined' && window.location && window.location.hostname) {
     const hostname = window.location.hostname;
     const protocol = window.location.protocol || 'http:';
@@ -12,12 +18,6 @@ export const getApiBaseUrl = () => {
     if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
       return `${protocol}//${hostname}:8000`;
     }
-  }
-
-  // 2. Explicit process.env.REACT_APP_API_URL override if present
-  const envUrl = process.env.REACT_APP_API_URL;
-  if (envUrl && envUrl.trim() !== '' && !envUrl.includes('127.0.0.1')) {
-    return envUrl.replace(/\/$/, '');
   }
 
   // 3. Fallback for localhost development
