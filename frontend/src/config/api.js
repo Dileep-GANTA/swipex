@@ -50,6 +50,20 @@ export const getApiHeaders = (token = null, extraHeaders = {}) => {
   return headers;
 };
 
+// Global Axios Request Interceptor to rewrite localhost URLs dynamically
+axios.interceptors.request.use(
+  (config) => {
+    if (config.url && config.url.includes('localhost:8000')) {
+      const apiBase = getApiBaseUrl();
+      config.url = config.url.replace(/https?:\/\/localhost:8000/, apiBase);
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Global Axios Response Interceptor to handle 404, 405, 422 HTTP status codes cleanly
 axios.interceptors.response.use(
   (response) => response,

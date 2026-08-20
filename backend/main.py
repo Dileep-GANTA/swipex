@@ -162,9 +162,18 @@ app = FastAPI()
 # 2. MOUNT STATIC FILES FOR RESUMES
 os.makedirs("uploads/resumes", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    frontend_url
+]
+if frontend_url.endswith("/"):
+    origins.append(frontend_url[:-1])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
