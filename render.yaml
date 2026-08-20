@@ -30,14 +30,13 @@ services:
         value: 3.11
 
   # 2. React Frontend Static Site
-  - type: web
+  - type: static
     name: swipex-frontend
-    runtime: static
     plan: free
     branch: main
     rootDir: frontend
     buildCommand: npm install && npm run build
-    publishPath: build
+    staticPublishPath: frontend/build
     envVars:
       # Link to the backend URL for API calls
       - key: REACT_APP_API_URL
