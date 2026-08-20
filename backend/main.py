@@ -29,8 +29,26 @@ from typing import Optional
 
 
 # Configure your Gemini API Key
-gemini_client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
-openai_client = OpenAI(api_key="YOUR_OPENAI_API_KEY")
+gemini_api_key = os.environ.get("GEMINI_API_KEY")
+gemini_client = None
+if gemini_api_key:
+    try:
+        gemini_client = genai.Client(api_key=gemini_api_key)
+    except Exception as e:
+        print(f"Failed to initialize Gemini client: {e}")
+else:
+    print("Warning: GEMINI_API_KEY environment variable is missing. Gemini features will be disabled.")
+
+# Configure OpenAI API Client
+openai_api_key = os.environ.get("OPENAI_API_KEY", "YOUR_OPENAI_API_KEY")
+openai_client = None
+if openai_api_key and openai_api_key != "YOUR_OPENAI_API_KEY":
+    try:
+        openai_client = OpenAI(api_key=openai_api_key)
+    except Exception as e:
+        print(f"Failed to initialize OpenAI client: {e}")
+else:
+    print("Warning: OPENAI_API_KEY environment variable is missing or placeholder. OpenAI features will be disabled.")
 
 
 
