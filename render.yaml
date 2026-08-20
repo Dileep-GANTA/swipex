@@ -30,8 +30,9 @@ services:
         value: 3.11
 
   # 2. React Frontend Static Site
-  - type: static
+  - type: web
     name: swipex-frontend
+    runtime: static
     plan: free
     branch: main
     rootDir: frontend
