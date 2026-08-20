@@ -5,7 +5,7 @@
 services:
   # 1. FastAPI Backend Service
   - type: web
-    name: swipex-backend
+    name: swipex-backend-ganta
     runtime: python
     plan: free
     branch: main
@@ -16,13 +16,13 @@ services:
       # Link to the PostgreSQL database
       - key: DATABASE_URL
         fromDatabase:
-          name: swipex-db
+          name: swipex-db-ganta
           property: connectionString
 
       # Link to the frontend URL for CORS setting
       - key: FRONTEND_URL
         fromService:
-          name: swipex-frontend
+          name: swipex-frontend-ganta
           type: web
           property: host
 
@@ -32,7 +32,7 @@ services:
 
   # 2. React Frontend Static Site
   - type: web
-    name: swipex-frontend
+    name: swipex-frontend-ganta
     runtime: static
     branch: main
     rootDir: frontend
@@ -42,13 +42,13 @@ services:
       # Link to the backend URL for API calls
       - key: REACT_APP_API_URL
         fromService:
-          name: swipex-backend
+          name: swipex-backend-ganta
           type: web
           property: host
 
 # 3. PostgreSQL Database
 databases:
-  - name: swipex-db
+  - name: swipex-db-ganta
     plan: free
-    databaseName: swipex
-    user: swipex_user
+    databaseName: swipex_ganta
+    user: swipex_user_ganta
