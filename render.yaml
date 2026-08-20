@@ -34,7 +34,6 @@ services:
   - type: web
     name: swipex-frontend
     runtime: static
-    plan: free
     branch: main
     rootDir: frontend
     buildCommand: npm install && npm run build
